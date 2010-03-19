@@ -41,8 +41,20 @@
         </dependency>
     </dependencies>
     <build>
-        <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>test/java</testSourceDirectory>
+        <sourceDirectory>${basedir}/src</sourceDirectory>
+        <testSourceDirectory>${basedir}/test/java</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>${basedir}/src</directory>
+                <includes>
+                    <include>**/*.html</include>
+                    <include>**/*.js</include>
+                    <include>**/*.css</include>
+                    <include>**/*.png</include>
+                    <include>**/*.gif</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
