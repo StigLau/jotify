@@ -7,7 +7,7 @@
     <groupId>de.felixbruns.jotify</groupId>
     <artifactId>jnlp-distribution</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>JNLP Distribution</name>
     <url>http://jottify.appspot.com</url>
@@ -35,7 +35,7 @@
                     <execution>
                         <phase>install</phase>
                         <goals>
-                            <goal>jnlp</goal>
+                            <goal>jnlp-inline</goal> 
                         </goals>
                     </execution>
                 </executions>
