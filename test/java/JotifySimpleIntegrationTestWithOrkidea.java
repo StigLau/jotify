@@ -22,8 +22,8 @@ public class JotifySimpleIntegrationTestWithOrkidea {
 
     @BeforeClass
     public static void before() throws AuthenticationException, ConnectionException {
-        String username = "stig.lau";
-        String password = "Hooray2U";
+        String username = "";
+        String password = "";
         jotify.login(username, password);
     }
 
@@ -54,6 +54,29 @@ public class JotifySimpleIntegrationTestWithOrkidea {
 
     @Test
     public void testPlayingOrkidea() throws TimeoutException, InterruptedException {
+        Result result = jotify.search("Orkidea");
+        Track track = result.getTracks().get(0);
+
+        jotify.play(track, new PlaybackAdapter() {
+            public void playbackFinished(Track track) {
+                try {
+                    System.out.println("Playback finished");
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        Thread.sleep(5000);
+        jotify.pause();
+        Thread.sleep(2000);
+        jotify.play();
+        Thread.sleep(5000);
+        jotify.stop();
+    }
+
+    @Test
+    public void testPlayAndSkip() throws TimeoutException, InterruptedException {
         Result result = jotify.search("Orkidea");
         Track track = result.getTracks().get(0);
 
