@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>de.felixbruns</groupId>
-    <artifactId>jotify</artifactId>
+    <groupId>de.felixbruns.jotify</groupId>
+    <artifactId>jotify-main</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -13,31 +13,36 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20090211</version>
-            <!-- <version>20080701</version> -->
         </dependency>
-        <!-- Hack for retrieving the lastFM jar -->
-        <dependency>
-            <groupId>lastfm</groupId>
-            <artifactId>bindings</artifactId>
-            <version>1.0</version>
-        </dependency>
-
         <dependency>
             <groupId>com.projectdarkstar.ext.jorbis</groupId>
             <artifactId>jorbis</artifactId>
             <version>0.0.17</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>lastfm</groupId>
+            <artifactId>bindings</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tritonus</groupId>
+            <artifactId>tritonus_jorbis</artifactId>
+            <version>0.3.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tritonus</groupId>
+            <artifactId>tritonus_share</artifactId>
+            <version>0.3.6</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.6</version>
-            <scope>test</scope>
+            <version>4.7</version>
         </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
+        <testSourceDirectory>test/java</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -53,14 +58,13 @@
 
     <repositories>
         <repository>
-            <id>KPRO 09 Main repo</id>
-            <url>http://kpro09.googlecode.com/svn/maven-repository</url>
-            <releases/>
-        </repository>
-        <repository>
             <id>Java.net - for jorbis</id>
             <url>http://download.java.net/maven/2</url>
             <releases/>
+        </repository>
+        <repository>
+            <id>local - for libs not located in online repos</id>
+            <url>file://${basedir}/lib</url>
         </repository>
     </repositories>
 </project>
