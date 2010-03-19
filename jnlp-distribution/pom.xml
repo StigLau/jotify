@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.felixbruns.jotify</groupId>
+    <artifactId>jnlp-distribution</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>JNLP Distribution</name>
+    <url>http://jottify.appspot.com</url>
+    <organization>
+        <url>http://stig.lau.no</url>
+        <name>Stig Lau</name>
+    </organization>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.felixbruns.jotify</groupId>
+            <artifactId>jotify-main</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo.webstart</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>jnlp</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jnlp>
+                        <mainClass>de.felixbruns.jotify.gui.JotifyApplication</mainClass>
+                    </jnlp>
+                    <outputJarVersions>false</outputJarVersions>
+                    <pack200>false</pack200>
+                    <gzip>false</gzip>
+                    <verbose>false</verbose>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+    </build>
+</project>
