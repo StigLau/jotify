@@ -7,6 +7,12 @@
     <packaging>jar</packaging>
 
     <name>Jotify Java Spotify player</name>
+    <licenses>
+        <license>
+            <name>Jotify BSD License</name>
+            <url>http://github.com/fxb/jotify/blob/master/LICENSE</url>
+        </license>
+    </licenses>
 
     <dependencies>
         <dependency>
