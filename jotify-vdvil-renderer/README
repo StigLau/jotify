@@ -1,0 +1,27 @@
+Jotify places of interest
+
+JotifyConnection -- has all state
+ ChannelCallback - used for getting the channel AES decryption key
+ Protocol -- responsible for communicating with the spotify server
+ ChannelPlayer -- responsible for audio playback
+  SubStramCache -- Local storage of music streams
+
+
+
+Several ChannelPlayers can be invoked at the same time
+
+Goals:
+How does one pre-cache music?
+Skip ahead in time
+Set speed to a given %
+What is required for offline playback?
+
+
+
+Sjekk ut ChannelPlayer -- streamoffset!!!
+
+
+javax.audio Clip er veldig relevant
+TODO!!!! Ett problem med hurtigløsningen sånn den er idag er at
+ * den ikke sorterer events i riktig rekkefølge, som kan føre til at samples ikke spilles av
+ * volum ikke fungerer skikkelig!!

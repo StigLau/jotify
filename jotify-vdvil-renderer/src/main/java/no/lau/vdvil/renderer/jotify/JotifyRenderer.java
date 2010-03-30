@@ -2,6 +2,12 @@ package no.lau.vdvil.renderer.jotify;
 
 import no.bouvet.kpro.renderer.AbstractRenderer;
 import no.bouvet.kpro.renderer.Instruction;
+import no.bouvet.kpro.renderer.audio.AudioInstruction;
+import no.bouvet.kpro.renderer.audio.AudioRenderer;
+import no.bouvet.kpro.renderer.audio.AudioTarget;
+
+import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * This renderer is responsible for adding video instructions to the list of a
@@ -12,7 +18,11 @@ import no.bouvet.kpro.renderer.Instruction;
  *
  */
 
-public class JotifyRenderer extends AbstractRenderer  {
+public class JotifyRenderer extends AudioRenderer {
+    public JotifyRenderer(AudioTarget target) {
+        super(target);
+    }
+
     /**
      * The instruction parameter may be null, which indicates no more
 	 * instructions.
@@ -24,12 +34,17 @@ public class JotifyRenderer extends AbstractRenderer  {
     @Override
     public void handleInstruction(int time, Instruction instruction) {
         if(instruction == null) {
-            return;
+            _finished = true;
         }
-        if (instruction instanceof JotifyAudioInstruction) {
+        else if (instruction instanceof JotifyAudioInstruction) {
             JotifyAudioInstruction jotifyAudioInstruction = (JotifyAudioInstruction) instruction;
-            jotifyAudioInstruction.play();
+            try {
+                jotifyAudioInstruction.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
+
 

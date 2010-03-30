@@ -7,6 +7,9 @@ import no.lau.tagger.model.AbstractPart;
 import org.apache.log4j.Logger;
 
 import javax.sound.sampled.LineUnavailableException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * This is the master class, responsible for playing a small demoset of VDVIL music
@@ -21,23 +24,26 @@ public class JotifyPlayer implements Player {
         masterBpm = composition.masterBpm;
         Instructions instructions = createInstructionsFromParts(composition);
         renderer = new Renderer(instructions);
-        renderer.addRenderer(new AudioRenderer(new AudioPlaybackTarget()));
+        renderer.addRenderer(new JotifyRenderer(new AudioPlaybackTarget()));
     }
 
-    public static Instructions createInstructionsFromParts(Composition composition) {
+    static Instructions createInstructionsFromParts(Composition composition) {
         Instructions instructions = new Instructions();
-        for (AbstractPart part : composition.parts) {
-            try {
-                instructions.append(part.translateToInstruction(composition.masterBpm));
-            } catch (Exception e) {
-                log.error("Error reading file: ", e);
-            }
+        //Here is where I lay my hack --- jotify instructions
+        AudioSource source = null;
+        try {
+            source = AudioSourceFactory.load(new File("/Users/stiglau/kpro/space_manoeuvres-stage_one_original.mp3"));
+        } catch (IOException e) {
+            e.printStackTrace(); 
         }
+        JotifyAudioInstruction jottAudio = new JotifyAudioInstruction(0, 206959, source, 0, Renderer.RATE);
+        instructions.append(jottAudio);
+
         return instructions;
     }
 
     public void play(Float startCue) {
-        Float startCueInMillis = (startCue * 44100 * 60)/ masterBpm;
+        Float startCueInMillis = (startCue * Renderer.RATE * 60)/ masterBpm;
         renderer.start(startCueInMillis.intValue());
     }
 
