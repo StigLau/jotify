@@ -6,13 +6,8 @@ import no.lau.tagger.model.Composition;
 import no.lau.tagger.model.AbstractPart;
 import org.apache.log4j.Logger;
 
-import javax.sound.sampled.LineUnavailableException;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
 /**
- * This is the master class, responsible for playing a small demoset of VDVIL music
+ * This is the Jotify Player class, it is responsible for loading the different renderers
  */
 public class JotifyPlayer implements Player {
     private final Renderer renderer;
@@ -20,25 +15,18 @@ public class JotifyPlayer implements Player {
     static Logger log = Logger.getLogger(JotifyPlayer.class);
 
 
-    public JotifyPlayer(Composition composition) throws LineUnavailableException {
+    public JotifyPlayer(Composition composition) throws Exception {
         masterBpm = composition.masterBpm;
         Instructions instructions = createInstructionsFromParts(composition);
         renderer = new Renderer(instructions);
         renderer.addRenderer(new JotifyRenderer(new AudioPlaybackTarget()));
     }
 
-    static Instructions createInstructionsFromParts(Composition composition) {
+    static Instructions createInstructionsFromParts(Composition composition) throws Exception {
         Instructions instructions = new Instructions();
-        //Here is where I lay my hack --- jotify instructions
-        AudioSource source = null;
-        try {
-            source = AudioSourceFactory.load(new File("/Users/stiglau/kpro/space_manoeuvres-stage_one_original.mp3"));
-        } catch (IOException e) {
-            e.printStackTrace(); 
+        for (AbstractPart part : composition.parts) {
+            instructions.append(part.translateToInstruction(composition.masterBpm));
         }
-        JotifyAudioInstruction jottAudio = new JotifyAudioInstruction(0, 206959, source, 0, Renderer.RATE);
-        instructions.append(jottAudio);
-
         return instructions;
     }
 

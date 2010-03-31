@@ -1,5 +1,6 @@
 package no.lau.vdvil.renderer.jotify;
 
+import de.felixbruns.jotify.player.ChannelPlayer;
 import no.bouvet.kpro.renderer.AbstractRenderer;
 import no.bouvet.kpro.renderer.Instruction;
 import no.bouvet.kpro.renderer.audio.AudioInstruction;
@@ -33,15 +34,19 @@ public class JotifyRenderer extends AudioRenderer {
 
     @Override
     public void handleInstruction(int time, Instruction instruction) {
+        System.out.println("Instruction arrived " + instruction);
         if(instruction == null) {
             _finished = true;
         }
         else if (instruction instanceof JotifyAudioInstruction) {
             JotifyAudioInstruction jotifyAudioInstruction = (JotifyAudioInstruction) instruction;
             try {
-                jotifyAudioInstruction.play();
+                ChannelPlayer player = new ChannelPlayer(jotifyAudioInstruction.track, jotifyAudioInstruction.key);
+                player.cache.load("substream", jotifyAudioInstruction.hash(), player);
+                player.open(player.input);
+                player.play();
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException("Problem with ChannelPlayer in JotifyAudioInstruction", e);
             }
         }
     }
