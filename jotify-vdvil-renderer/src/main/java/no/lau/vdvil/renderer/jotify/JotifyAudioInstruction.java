@@ -19,6 +19,7 @@ public class JotifyAudioInstruction extends AudioInstruction {
      */
     public String hash() {
         int offset = 0;
-        return new SubstreamCache().hash(track, offset, track.getLength());
+        int streamLength = 160 * 1024 * 5 / 8;
+        return new SubstreamCache().hash(track, offset, streamLength);
     }
 }

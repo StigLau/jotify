@@ -27,12 +27,12 @@ public class JotifyConnection implements Jotify, CommandListener {
 	private User      user;
 	private Semaphore userSemaphore;
 	private Player    player;
-	private Cache     cache;
+	public Cache     cache;
 	private float     volume;
 	private long      timeout;
 	private TimeUnit  unit;
-	
-	/**
+
+    /**
 	 * Enum for browsing media.
 	 */
 	private enum BrowseType {
@@ -1466,8 +1466,10 @@ public class JotifyConnection implements Jotify, CommandListener {
 		/* Start playing. */
 		this.play();
 	}
-	
-	/**
+
+
+
+    /**
 	 * Start playing or resume current track.
 	 */
 	public void play(){

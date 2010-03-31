@@ -25,6 +25,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import de.felixbruns.jotify.cache.SubstreamCache;
 import de.felixbruns.jotify.exceptions.ProtocolException;
+import de.felixbruns.jotify.media.File;
 import de.felixbruns.jotify.media.Track;
 import de.felixbruns.jotify.protocol.Protocol;
 import de.felixbruns.jotify.protocol.channel.Channel;
@@ -41,7 +42,7 @@ public class ChannelPlayer implements Runnable, Player, ChannelListener {
 	private byte[] iv;
 	
 	/* Streams, audio decoding and output. */
-	private PipedInputStream  input;
+	public PipedInputStream  input;
 	private PipedOutputStream output;
 	private SpotifyOggHeader  spotifyOggHeader;
 	private AudioInputStream  audioStream;
@@ -64,13 +65,13 @@ public class ChannelPlayer implements Runnable, Player, ChannelListener {
 	private boolean  loading;
 	
 	/* Caching of substreams. */
-	private SubstreamCache cache;
+	public SubstreamCache cache;
 	private byte[]         cacheData;
 	
 	/* Current player status and semaphores for pausing. */
 	private boolean   active;
 	private Semaphore pause;
-	
+
 	/**
 	 * Creates a new ChannelPlayer for decrypting and playing audio from a
 	 * protocol channel.
@@ -93,8 +94,20 @@ public class ChannelPlayer implements Runnable, Player, ChannelListener {
 		this.listener = listener;
 		this.position = 0;
 		this.cache    = new SubstreamCache();
-		
-		/* Initialize AES cipher. */		
+
+
+        System.out.println("Revealing all the secrets:");
+        System.out.print("SECRET key =");
+        for (byte b : key) {
+            System.out.print(b + " ");
+        }
+        System.out.println("track.getId() = " + track.getId());
+        System.out.println("track.getLength() = " + track.getLength());
+        for (File file : track.getFiles()) {
+            System.out.println("file.getId() = " + file.getId() + " " + file.getFormat());
+        }
+
+        /* Initialize AES cipher. */
 		try{
 			/* Get AES cipher instance. */
 			this.cipher = Cipher.getInstance("AES/CTR/NoPadding");
@@ -154,6 +167,7 @@ public class ChannelPlayer implements Runnable, Player, ChannelListener {
 		 * for cached substream first.
 		 */
 		String hash = this.cache.hash(this.track, this.streamOffset, this.streamLength);
+        System.out.println("hash = " + hash);
 		
 		if(this.cache != null && this.cache.contains("substream", hash)){
 			this.cache.load("substream", hash, this);
@@ -177,12 +191,47 @@ public class ChannelPlayer implements Runnable, Player, ChannelListener {
 			throw new RuntimeException("Can't open input stream for playing!", e);
 		}
 	}
-	
-	/* Open an input stream and start decoding it,
-	 * set up audio stuff when AudioInputStream
-	 * was sucessfully created.
-	 */
-	private void open(InputStream stream) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+
+    /*
+     * This is a hack for implementing minimal playback from local cache
+     */
+    public ChannelPlayer(Track track, byte[] key) throws Exception {
+        this.cache    = new SubstreamCache();
+        this.input  = new PipedInputStream(160 * 1024 * 10 / 8);
+        this.output = new PipedOutputStream(this.input);
+        this.streamOffset = 0;
+		this.streamLength = 160 * 1024 * 5 / 8;
+		this.loading      = false;
+
+        setupTheSecurityStuff(key);
+        //Used in the end to find the actual file
+        this.track = track;
+        this.pause            = new Semaphore(1);
+
+    }
+
+    private void setupTheSecurityStuff(byte[] key) throws Exception{
+        /* Get AES cipher instance. */
+			this.cipher = Cipher.getInstance("AES/CTR/NoPadding");
+
+			/* Create secret key from bytes and set initial IV. */
+			this.key = new SecretKeySpec(key, "AES");
+			this.iv  = new byte[]{
+				(byte)0x72, (byte)0xe0, (byte)0x67, (byte)0xfb,
+				(byte)0xdd, (byte)0xcb, (byte)0xcf, (byte)0x77,
+				(byte)0xeb, (byte)0xe8, (byte)0xbc, (byte)0x64,
+				(byte)0x3f, (byte)0x63, (byte)0x0d, (byte)0x93
+			};
+
+			/* Initialize cipher with key and IV in encrypt mode. */
+			this.cipher.init(Cipher.ENCRYPT_MODE, this.key, new IvParameterSpec(this.iv));
+    }
+
+    /* Open an input stream and start decoding it,
+      * set up audio stuff when AudioInputStream
+      * was sucessfully created.
+      */
+	public void open(InputStream stream) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
 		/* Audio streams and formats. */
 		AudioInputStream sourceStream;
 		AudioFormat      sourceFormat;
@@ -326,6 +375,7 @@ public class ChannelPlayer implements Runnable, Player, ChannelListener {
 	}
 	
 	public void play(Track track, PlaybackListener listener) {
+        this.listener = listener;
 		this.play();
 	}
 	
@@ -486,7 +536,7 @@ public class ChannelPlayer implements Runnable, Player, ChannelListener {
 	public void channelData(Channel channel, byte[] data){
 		/* Offsets needed for deinterleaving. */
 		int off, w, x, y, z;
-		
+
 		/* Copy data to cache buffer. */
 		for(int i = 0; i < data.length; i++){
 			this.cacheData[this.receivedLength + i] = data[i];
